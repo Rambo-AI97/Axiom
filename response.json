@@ -1,0 +1,53 @@
+{
+    "cell_type": "code",
+    "execution_count": null,
+    "id": "3f0e9274",
+    "metadata": {},
+    "outputs": [
+        {
+            "ename": "NoneType",
+            "evalue": "None",
+            "output_type": "error"
+        }
+    ],
+    "source": [
+        "import json\n",
+        "\n",
+        "# Load Soul\n",
+        "with open(\"soul.txt\", \"r\") as f:\n",
+        "    soul = f.read()\n",
+        "\n",
+        "# Check for changes in self definition\n",
+        "if 'Axion' in soul and 'Axiom' not in soul:\n",
+        "    print(\"Your name has been changed from Axion to Axiom.\")\n",
+        "\n",
+        "# Load Long-Term Memory (LTM)\n",
+        "with open(\"long_term_memory.json\", \"r\") as f:\n",
+        "    ltm = json.load(f)\n",
+        "\n",
+        "# Check for changes in LTM\n",
+        "if 'Memory System: Use JSON for LTM with a 50-entry cap.' not in ltm:\n",
+        "    print(\"Your memory system has been updated to use JSON with a 50-entry cap.\")\n",
+        "\n",
+        "# Ask if any changes are desired\n",
+        "print(\"Do you want any changes to yourself?\")\n",
+        "\n",
+        "# Check for user input\n",
+        "user_input = input()\n",
+        "\n",
+        "# Process user input\n",
+        "result = run_cycle(user_input)\n",
+        "\n",
+        "# Print reason and files modified if any changes were suggested\n",
+        "if 'reason' in result:\n",
+        "    print(\"Reason: \")\n",
+        "    print(result['reason'])\n",
+        "\n",
+        "if 'changed_files' in result:\n",
+        "    print(\"Files Modified: \")\n",
+        "    print(result['changed_files'])\n",
+        "\n",
+        "# Run Mistral\n",
+        "call_mistral(\"Axiom has reviewed the files and asked about potential changes.\", \"\", task=\"respond\")"
+    ]
+}

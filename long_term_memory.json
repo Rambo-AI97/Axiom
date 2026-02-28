@@ -1,0 +1,12 @@
+[
+    {
+        "reason": "The memory system needs a retrieval and pruning mechanism to avoid token bloat.",
+        "solution": "Implemented a JSON-based LTM with a relevance check and duplicate prevention."
+    },
+    {
+        "memory_snippet": "Memory System: Use JSON for LTM with a 50-entry cap."
+    },
+    {
+        "memory_snippet": "User asked about self-improvement: any improvement you ..."
+    }
+]
