@@ -7,7 +7,7 @@ import datetime
 # --- AXIOM ENGINE ---
 class AxiomEngine:
     def __init__(self, root_dir=None):
-        self.root_dir = root_dir or os.getcwd()
+        self.root_dir = os.path.join(os.getcwd(), "soul.md")
         self.soul_path = os.path.join(self.root_dir, "soul.txt")
         self.ltm_path = os.path.join(self.root_dir, "long_term_memory.json")
         self.response_path = os.path.join(self.root_dir, "response.json")
@@ -57,7 +57,7 @@ class AxiomEngine:
 
     def read_files(self):
         knowledge = {}
-        ignore = ['long_term_memory.json', 'response.json', '.git', '.venv', '__pycache__', 'app.py']
+        ignore = ['response.json', '.git', '.venv', '__pycache__']
         for file in os.listdir(self.root_dir):
             path = os.path.join(self.root_dir, file)
             if os.path.isfile(path) and not any(x in file for x in ignore):
@@ -67,15 +67,7 @@ class AxiomEngine:
                 except: continue
         return knowledge
 
-# --- UI CONFIG ---
-st.set_page_config(page_title="AXIOM", layout="wide")
-st.markdown("""
-    <style>
-    .stApp { background-color: #050505; color: #e0e0e0; }
-    .terminal { background-color: #000; border: 1px solid #00ffcc; padding: 10px; font-family: monospace; color: #00ffcc; height: 150px; overflow-y: auto; font-size: 12px; }
-    .response-card { background-color: #111; border-left: 5px solid #00ffcc; padding: 15px; margin: 10px 0; border-radius: 5px; }
-    </style>
-    """, unsafe_allow_html=True)
+
 
 if "axiom" not in st.session_state:
     st.session_state.axiom = AxiomEngine()
@@ -133,21 +125,28 @@ if query:
             # Update LTM
             ax.update_ltm(query, result)
             
-            # --- DISPLAY RESULTS ---
+    #        Move the display logic INSIDE this 'if query' block
             st.markdown("### Axiom Insights")
-            
-            # Use .get() with multiple case options to match your Soul instructions
-            reason = result.get("Reason") or result.get("reason") or "N/A"
-            solution = result.get("Solution") or result.get("solution") or "N/A"
-            score = result.get("Score") or result.get("score") or "?"
-            
+
+            # Convert keys to lowercase for flexibility
+            res_data = {k.lower(): v for k, v in result.items()} 
+
+            reason = res_data.get("reason", "No reason provided.")
+            solution = res_data.get("solution", "No action needed.")
+            score = res_data.get("score", "N/A")
+
             st.markdown(f"""
             <div class="response-card">
-                <strong>REASON:</strong><br>{reason}<br><br>
-                <strong>SOLUTION:</strong><br>{solution}<br><br>
-                <strong>SELF-SCORE:</strong> {score}/10
+                <strong>THOUGHT:</strong><br>{reason}<br><br>
+                <strong>RESPONSE:</strong><br>{solution}<br><br>
+                <strong>CONFIDENCE:</strong> {score}/10
             </div>
             """, unsafe_allow_html=True)
+            
+            # Check for code snippets
+            code_snippet = res_data.get("code")
+            if code_snippet:
+                st.code(code_snippet, language="python")
             
             if "code" in result or "Code" in result:
                 code_snippet = result.get("code") or result.get("Code")
